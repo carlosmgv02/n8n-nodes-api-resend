@@ -1,0 +1,35 @@
+# Source files
+credentials/**/*.ts
+nodes/**/*.ts
+!dist/**/*
+
+# Config files
+tsconfig.json
+.eslintrc.js
+.prettierrc
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Tests
+test/
+*.test.ts
+*.spec.ts
+
+# Documentation (keep README)
+# docs/
+
+# OS
+.DS_Store
+Thumbs.db
