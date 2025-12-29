@@ -73,11 +73,11 @@ jobs:
       - name: Check for duplicate code
         run: |
           echo "Checking for common code duplication patterns..."
-          # Check that preparePaginatedRequest is only in requestBuilders
-          count=$(grep -r "preparePaginatedRequest" nodes/Resend/resources/ --include="*.ts" | wc -l)
+          # Check that preparePaginatedRequest is not DEFINED in resources (imports are OK)
+          count=$(grep -r "async function preparePaginatedRequest\|function preparePaginatedRequest" nodes/Resend/resources/ --include="*.ts" | wc -l)
           if [ $count -gt 0 ]; then
-            echo "Error: Found duplicate preparePaginatedRequest in resources"
-            grep -r "preparePaginatedRequest" nodes/Resend/resources/ --include="*.ts"
+            echo "Error: Found duplicate preparePaginatedRequest implementation in resources"
+            grep -r "function preparePaginatedRequest" nodes/Resend/resources/ --include="*.ts"
             exit 1
           fi
           echo "✓ No code duplication found"
