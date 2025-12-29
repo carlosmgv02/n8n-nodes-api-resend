@@ -18,6 +18,8 @@ import {
 	keyValuePairsToObject,
 } from '../utils/attachmentHelpers';
 import { processTemplateVariables, processEmailTags } from '../utils/templateHelpers';
+import { preparePaginatedRequest, processTemplateOrHtmlContent } from '../utils/requestBuilders';
+import { BATCH_EMAIL } from '../constants';
 
 // preSend hook for Send Email operation
 async function prepareSendEmailRequest(
@@ -48,25 +50,8 @@ async function prepareSendEmailRequest(
 	}
 
 	// Template vs HTML content
-	const useTemplate = this.getNodeParameter('useTemplate', false) as boolean;
-
-	if (useTemplate) {
-		const templateId = this.getNodeParameter('templateId', '') as string;
-		const templateVariables = this.getNodeParameter('templateVariables', {}) as any;
-
-		body.template = {
-			id: templateId,
-			variables: processTemplateVariables(templateVariables),
-		};
-	} else {
-		body.subject = this.getNodeParameter('subject', '') as string;
-		body.html = this.getNodeParameter('html', '') as string;
-
-		const text = this.getNodeParameter('text', '') as string;
-		if (text) {
-			body.text = text;
-		}
-	}
+	const contentFields = processTemplateOrHtmlContent.call(this, this, true);
+	Object.assign(body, contentFields);
 
 	// Topic
 	const topicId = this.getNodeParameter('topicId', '') as string;
@@ -108,7 +93,7 @@ async function prepareSendEmailRequest(
 		);
 	}
 
-	if (!useTemplate && !body.subject) {
+	if (!body.template && !body.subject) {
 		throw new NodeOperationError(
 			this.getNode(),
 			'Subject is required when not using a template',
@@ -165,39 +150,15 @@ async function prepareSendBatchRequest(
 		emails.push(email);
 	}
 
-	// Validate max 100 emails
-	if (emails.length > 100) {
+	// Validate max batch emails
+	if (emails.length > BATCH_EMAIL.MAX_COUNT) {
 		throw new NodeOperationError(
 			this.getNode(),
-			`Batch send supports maximum 100 emails, you provided ${emails.length}`,
+			`Batch send supports maximum ${BATCH_EMAIL.MAX_COUNT} emails, you provided ${emails.length}`,
 		);
 	}
 
 	requestOptions.body = emails;
-	return requestOptions;
-}
-
-// preSend hook for pagination
-async function preparePaginatedRequest(
-	this: IExecuteSingleFunctions,
-	requestOptions: IHttpRequestOptions,
-): Promise<IHttpRequestOptions> {
-	const qs: any = {};
-
-	const limit = this.getNodeParameter('limit', 20) as number;
-	qs.limit = limit;
-
-	const after = this.getNodeParameter('after', '') as string;
-	if (after) {
-		qs.after = after;
-	}
-
-	const before = this.getNodeParameter('before', '') as string;
-	if (before) {
-		qs.before = before;
-	}
-
-	requestOptions.qs = qs;
 	return requestOptions;
 }
 

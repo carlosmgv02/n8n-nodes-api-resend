@@ -9,6 +9,7 @@ import { buildTemplateVariablesField, buildEmailArrayField } from '../utils/fiel
 import { buildIdField, buildPaginationFields } from '../utils/commonFields';
 import { splitEmails } from '../utils/attachmentHelpers';
 import { processTemplateVariables } from '../utils/templateHelpers';
+import { preparePaginatedRequest, processTemplateOrHtmlContent } from '../utils/requestBuilders';
 
 // preSend hook for Create/Update Broadcast
 async function prepareBroadcastRequest(
@@ -31,24 +32,8 @@ async function prepareBroadcastRequest(
 	}
 
 	// Template vs HTML content
-	const useTemplate = this.getNodeParameter('useTemplate', false) as boolean;
-
-	if (useTemplate) {
-		const templateId = this.getNodeParameter('templateId', '') as string;
-		const templateVariables = this.getNodeParameter('templateVariables', {}) as any;
-
-		body.template = {
-			id: templateId,
-			variables: processTemplateVariables(templateVariables),
-		};
-	} else {
-		body.html = this.getNodeParameter('html', '') as string;
-
-		const text = this.getNodeParameter('text', '') as string;
-		if (text) {
-			body.text = text;
-		}
-	}
+	const contentFields = processTemplateOrHtmlContent.call(this, this, false);
+	Object.assign(body, contentFields);
 
 	// Topic
 	const topicId = this.getNodeParameter('topicId', '') as string;
@@ -81,40 +66,16 @@ async function prepareSendBroadcastRequest(
 ): Promise<IHttpRequestOptions> {
 	const scheduledAt = this.getNodeParameter('scheduledAt', '') as string;
 
-	// Si hay scheduledAt, incluirlo. Si no, enviar body vacío para envío inmediato
+	// If scheduledAt is provided, include it. Otherwise, send empty body for immediate delivery
 	if (scheduledAt && scheduledAt.trim() !== '') {
 		requestOptions.body = {
 			scheduled_at: scheduledAt,
 		};
 	} else {
-		// Envío inmediato - body vacío
+		// Immediate send - empty body
 		requestOptions.body = {};
 	}
 
-	return requestOptions;
-}
-
-// preSend hook for pagination
-async function preparePaginatedRequest(
-	this: IExecuteSingleFunctions,
-	requestOptions: IHttpRequestOptions,
-): Promise<IHttpRequestOptions> {
-	const qs: any = {};
-
-	const limit = this.getNodeParameter('limit', 20) as number;
-	qs.limit = limit;
-
-	const after = this.getNodeParameter('after', '') as string;
-	if (after) {
-		qs.after = after;
-	}
-
-	const before = this.getNodeParameter('before', '') as string;
-	if (before) {
-		qs.before = before;
-	}
-
-	requestOptions.qs = qs;
 	return requestOptions;
 }
 

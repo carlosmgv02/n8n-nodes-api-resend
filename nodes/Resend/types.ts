@@ -143,6 +143,68 @@ export interface Template {
 	created_at: string;
 }
 
+// Request body types for improved type safety
+export interface SendEmailRequestBody {
+	from: string;
+	to: string[];
+	subject?: string;
+	html?: string;
+	text?: string;
+	cc?: string[];
+	bcc?: string[];
+	reply_to?: string[];
+	template?: {
+		id: string;
+		variables: Record<string, string | number>;
+	};
+	topic_id?: string;
+	attachments?: ResendAttachment[];
+	headers?: Record<string, string>;
+	tags?: EmailTag[];
+	scheduled_at?: string;
+}
+
+export interface BroadcastRequestBody {
+	segment_id?: string;
+	from: string;
+	subject: string;
+	name?: string;
+	html?: string;
+	text?: string;
+	template?: {
+		id: string;
+		variables: Record<string, string | number>;
+	};
+	topic_id?: string;
+	reply_to?: string[];
+}
+
+export interface ContactRequestBody {
+	email?: string;
+	first_name?: string;
+	last_name?: string;
+	unsubscribed?: boolean;
+	properties?: Record<string, string | number>;
+}
+
+export interface SegmentRequestBody {
+	name: string;
+	description?: string;
+}
+
+export interface TopicRequestBody {
+	name?: string;
+	description?: string;
+	default_subscription?: 'opt_in' | 'opt_out';
+	visibility?: 'public' | 'private';
+}
+
+export interface PaginationQuery {
+	limit?: number;
+	after?: string;
+	before?: string;
+}
+
 // Resource module interface
 export interface ResendResourceDescription {
 	displayName: string;

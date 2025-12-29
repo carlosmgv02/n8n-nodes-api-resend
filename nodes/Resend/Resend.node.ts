@@ -10,6 +10,7 @@ import {
 	getSegments,
 	getTopics,
 	getTemplates,
+	getTemplateVariables,
 } from './utils/loadOptionsHelpers';
 import {
 	emailsResource,
@@ -62,6 +63,7 @@ export class Resend implements INodeType {
 			getSegments,
 			getTopics,
 			getTemplates,
+			getTemplateVariables,
 		},
 	};
 }

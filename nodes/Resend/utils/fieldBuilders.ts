@@ -87,12 +87,15 @@ export function buildTemplateVariablesField(
 				displayName: 'Variable',
 				values: [
 					{
-						displayName: 'Key',
+						displayName: 'Variable Name',
 						name: 'key',
-						type: 'string',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getTemplateVariables',
+							loadOptionsDependsOn: ['templateId'],
+						},
 						default: '',
-						description: 'Variable name (e.g., PRODUCT_NAME)',
-						placeholder: 'PRODUCT_NAME',
+						description: 'Select a variable from the template',
 					},
 					{
 						displayName: 'Value',

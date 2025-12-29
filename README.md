@@ -154,6 +154,14 @@ Schedule emails and broadcasts:
 
 MIT
 
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
+- Development setup
+- Code standards
+- Pull request process
+- Release workflow
+
 ## Development
 
 ```bash
@@ -162,6 +170,9 @@ npm install
 
 # Build
 npm run build
+
+# Lint
+npm run lint
 
 # Watch mode
 npm run dev

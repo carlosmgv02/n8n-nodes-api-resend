@@ -6,6 +6,7 @@ import {
 } from 'n8n-workflow';
 import { ResendResourceModule } from '../types';
 import { buildIdField, buildPaginationFields } from '../utils/commonFields';
+import { preparePaginatedRequest } from '../utils/requestBuilders';
 
 // preSend hook for Create/Update Segment
 async function prepareSegmentRequest(
@@ -27,30 +28,6 @@ async function prepareSegmentRequest(
 	}
 
 	requestOptions.body = body;
-	return requestOptions;
-}
-
-// preSend hook for pagination
-async function preparePaginatedRequest(
-	this: IExecuteSingleFunctions,
-	requestOptions: IHttpRequestOptions,
-): Promise<IHttpRequestOptions> {
-	const qs: any = {};
-
-	const limit = this.getNodeParameter('limit', 20) as number;
-	qs.limit = limit;
-
-	const after = this.getNodeParameter('after', '') as string;
-	if (after) {
-		qs.after = after;
-	}
-
-	const before = this.getNodeParameter('before', '') as string;
-	if (before) {
-		qs.before = before;
-	}
-
-	requestOptions.qs = qs;
 	return requestOptions;
 }
 

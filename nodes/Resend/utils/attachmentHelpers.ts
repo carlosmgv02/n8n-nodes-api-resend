@@ -3,6 +3,7 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 import { ResendAttachment } from '../types';
+import { ATTACHMENT } from '../constants';
 
 /**
  * Process attachments from fixedCollection format to Resend API format
@@ -17,7 +18,7 @@ export async function processAttachments(
 
 	const attachments: ResendAttachment[] = [];
 	let totalSize = 0;
-	const MAX_SIZE = 40 * 1024 * 1024; // 40MB
+	const MAX_SIZE = ATTACHMENT.MAX_SIZE_BYTES;
 
 	for (const attachment of attachmentsData.attachment) {
 		const processedAttachment: ResendAttachment = {};
@@ -69,7 +70,7 @@ export async function processAttachments(
 			if (totalSize > MAX_SIZE) {
 				throw new NodeOperationError(
 					this.getNode(),
-					`Total attachment size (${(totalSize / 1024 / 1024).toFixed(2)}MB) exceeds the 40MB limit`,
+					`Total attachment size (${(totalSize / 1024 / 1024).toFixed(2)}MB) exceeds the ${ATTACHMENT.MAX_SIZE_MB}MB limit`,
 				);
 			}
 

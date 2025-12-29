@@ -1,5 +1,6 @@
 import { INodeProperties } from 'n8n-workflow';
 import { ResendResource } from '../types';
+import { PAGINATION } from '../constants';
 
 export function buildResourceField(resources: { name: string; value: ResendResource }[]): INodeProperties {
 	return {
@@ -44,10 +45,10 @@ export function buildPaginationFields(
 			displayName: 'Limit',
 			name: 'limit',
 			type: 'number',
-			default: 20,
+			default: PAGINATION.DEFAULT_LIMIT,
 			typeOptions: {
 				minValue: 1,
-				maxValue: 100,
+				maxValue: PAGINATION.MAX_LIMIT,
 			},
 			displayOptions: {
 				show: {
@@ -55,7 +56,7 @@ export function buildPaginationFields(
 					operation: [operation],
 				},
 			},
-			description: 'Maximum number of results to return (1-100)',
+			description: `Maximum number of results to return (1-${PAGINATION.MAX_LIMIT})`,
 		},
 		{
 			displayName: 'After',

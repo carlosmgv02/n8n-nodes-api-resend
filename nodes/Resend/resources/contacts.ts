@@ -8,6 +8,7 @@ import { ResendResourceModule } from '../types';
 import { buildContactPropertiesField } from '../utils/fieldBuilders';
 import { buildIdField, buildPaginationFields } from '../utils/commonFields';
 import { processContactProperties } from '../utils/templateHelpers';
+import { preparePaginatedRequest } from '../utils/requestBuilders';
 
 // preSend hook for Create Contact
 async function prepareCreateContactRequest(
@@ -75,30 +76,6 @@ async function prepareUpdateContactRequest(
 	}
 
 	requestOptions.body = body;
-	return requestOptions;
-}
-
-// preSend hook for pagination
-async function preparePaginatedRequest(
-	this: IExecuteSingleFunctions,
-	requestOptions: IHttpRequestOptions,
-): Promise<IHttpRequestOptions> {
-	const qs: any = {};
-
-	const limit = this.getNodeParameter('limit', 20) as number;
-	qs.limit = limit;
-
-	const after = this.getNodeParameter('after', '') as string;
-	if (after) {
-		qs.after = after;
-	}
-
-	const before = this.getNodeParameter('before', '') as string;
-	if (before) {
-		qs.before = before;
-	}
-
-	requestOptions.qs = qs;
 	return requestOptions;
 }
 

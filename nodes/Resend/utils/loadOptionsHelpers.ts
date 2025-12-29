@@ -111,3 +111,49 @@ export async function getTemplates(
 		];
 	}
 }
+
+/**
+ * Load template variables for dynamic field generation
+ */
+export async function getTemplateVariables(
+	this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+	try {
+		const templateId = this.getNodeParameter('templateId') as string;
+
+		if (!templateId || templateId === '') {
+			return [];
+		}
+
+		const template = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'resendApi',
+			{
+				method: 'GET',
+				url: `https://api.resend.com/templates/${templateId}`,
+			},
+		) as Template;
+
+		if (!template.variables || template.variables.length === 0) {
+			return [
+				{
+					name: 'No variables defined in this template',
+					value: '__no_variables__',
+				},
+			];
+		}
+
+		return template.variables.map((variable) => ({
+			name: `${variable.key}${variable.fallback_value ? ` (default: ${variable.fallback_value})` : ''}`,
+			value: variable.key,
+			description: `Type: ${variable.type}`,
+		}));
+	} catch (error) {
+		return [
+			{
+				name: 'Error loading template variables',
+				value: 'error',
+			},
+		];
+	}
+}
