@@ -8,7 +8,6 @@ import {
 import { buildResendNode } from './utils/nodeBuilder';
 import {
 	getSegments,
-	getDomains,
 	getTopics,
 	getTemplates,
 } from './utils/loadOptionsHelpers';
@@ -61,7 +60,6 @@ export class Resend implements INodeType {
 	methods = {
 		loadOptions: {
 			getSegments,
-			getDomains,
 			getTopics,
 			getTemplates,
 		},

@@ -2,7 +2,7 @@ import {
 	ILoadOptionsFunctions,
 	INodePropertyOptions,
 } from 'n8n-workflow';
-import { Segment, Domain, Topic, Template, PaginatedResponse } from '../types';
+import { Segment, Topic, Template, PaginatedResponse } from '../types';
 
 /**
  * Load segments for dropdown selection
@@ -30,43 +30,6 @@ export async function getSegments(
 		return [
 			{
 				name: 'Error loading segments',
-				value: 'error',
-			},
-		];
-	}
-}
-
-/**
- * Load verified domains for dropdown selection
- */
-export async function getDomains(
-	this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
-	try {
-		const response = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'resendApi',
-			{
-				method: 'GET',
-				url: 'https://api.resend.com/domains',
-			},
-		) as PaginatedResponse<Domain>;
-
-		const domains = response.data || [];
-		// Only show verified domains
-		const verifiedDomains = domains.filter(
-			(domain: Domain) => domain.status === 'verified',
-		);
-
-		return verifiedDomains.map((domain: Domain) => ({
-			name: domain.name,
-			value: domain.name,
-			description: `Region: ${domain.region}`,
-		}));
-	} catch (error) {
-		return [
-			{
-				name: 'Error loading domains',
 				value: 'error',
 			},
 		];
