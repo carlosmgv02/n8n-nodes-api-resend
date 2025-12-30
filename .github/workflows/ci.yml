@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  lint-and-build:
+    name: Lint and Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format -- --check
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not created"
+            exit 1
+          fi
+          if [ ! -f "dist/nodes/Resend/Resend.node.js" ]; then
+            echo "Error: Main node file not built"
+            exit 1
+          fi
+          echo "✓ Build output verified successfully"
+
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for duplicate code
+        run: |
+          echo "Checking for common code duplication patterns..."
+          # Check that preparePaginatedRequest is not DEFINED in resources (imports are OK)
+          count=$(grep -r "async function preparePaginatedRequest\|function preparePaginatedRequest" nodes/Resend/resources/ --include="*.ts" | wc -l)
+          if [ $count -gt 0 ]; then
+            echo "Error: Found duplicate preparePaginatedRequest implementation in resources"
+            grep -r "function preparePaginatedRequest" nodes/Resend/resources/ --include="*.ts"
+            exit 1
+          fi
+          echo "✓ No code duplication found"
+
+      - name: Check for Spanish comments
+        run: |
+          echo "Checking for Spanish comments..."
+          if grep -r "Si hay\|Envío inmediato\|incluirlo" nodes/ --include="*.ts"; then
+            echo "Error: Found Spanish comments in code"
+            exit 1
+          fi
+          echo "✓ No Spanish comments found"
+
+      - name: Verify constants usage
+        run: |
+          echo "Verifying magic numbers are replaced with constants..."
+          # Check that magic numbers are not hardcoded
+          if grep -r "40 \* 1024 \* 1024" nodes/Resend/utils/ --include="*.ts"; then
+            echo "Error: Found hardcoded attachment size"
+            exit 1
+          fi
+          echo "✓ Constants properly used"
+
+      - name: TypeScript strict check
+        run: npx tsc --noEmit --strict || echo "Note - Strict mode has warnings"

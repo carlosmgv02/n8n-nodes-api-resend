@@ -1,0 +1,106 @@
+name: Release to npm
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+
+jobs:
+  release:
+    name: Release to npm Registry
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check if version changed
+        id: version_check
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+          # Check if this version is already published
+          if npm view n8n-nodes-api-resend@$CURRENT_VERSION version 2>/dev/null; then
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already published to npm"
+          else
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+            echo "New version $CURRENT_VERSION ready to publish"
+          fi
+
+      - name: Publish to npm
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: |
+          VERSION=${{ steps.version_check.outputs.current_version }}
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: Create GitHub Release
+        if: steps.version_check.outputs.should_publish == 'true'
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version_check.outputs.current_version }}
+          name: Release v${{ steps.version_check.outputs.current_version }}
+          body: |
+            ## Changes in v${{ steps.version_check.outputs.current_version }}
+
+            Published to npm: https://www.npmjs.com/package/n8n-nodes-api-resend/v/${{ steps.version_check.outputs.current_version }}
+
+            ### Installation
+            ```bash
+            npm install n8n-nodes-api-resend
+            ```
+
+            See the [CHANGELOG](https://github.com/carlosmgv02/n8n-nodes-resend/blob/master/CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
+
+      - name: No publish needed
+        if: steps.version_check.outputs.should_publish == 'false'
+        run: |
+          echo "⏭️ Skipping publish - version ${{ steps.version_check.outputs.current_version }} already exists on npm"
+          echo "To publish a new version:"
+          echo "1. Update version in package.json (npm version patch|minor|major)"
+          echo "2. Commit and push to master"
