@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/carlosmgv02/n8n-nodes-resend/master/nodes/Resend/resend.png" alt="Resend Logo" width="120" height="120">
+  <img src="https://raw.githubusercontent.com/carlosmgv02/n8n-nodes-api-resend/master/nodes/Resend/resend.png" alt="Resend Logo" width="120" height="120">
 
   # n8n-nodes-resend
 
@@ -7,7 +7,7 @@
 
   [![npm version](https://img.shields.io/npm/v/n8n-nodes-api-resend.svg)](https://www.npmjs.com/package/n8n-nodes-api-resend)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![CI](https://github.com/carlosmgv02/n8n-nodes-resend/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosmgv02/n8n-nodes-resend/actions/workflows/ci.yml)
+  [![CI](https://github.com/carlosmgv02/n8n-nodes-api-resend/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosmgv02/n8n-nodes-api-resend/actions/workflows/ci.yml)
 
   [Installation](#installation) • [Features](#key-features) • [Usage](#usage-examples) • [Contributing](CONTRIBUTING.md)
 </div>
@@ -249,7 +249,7 @@ npm run dev
 
 ## Support
 
-For bugs and feature requests, please [create an issue](https://github.com/carlosmgv02/n8n-nodes-resend/issues).
+For bugs and feature requests, please [create an issue](https://github.com/carlosmgv02/n8n-nodes-api-resend/issues).
 
 ## Compatibility
 

@@ -62,6 +62,36 @@ jobs:
             echo "New version $CURRENT_VERSION ready to publish"
           fi
 
+      - name: Update CHANGELOG
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: |
+          VERSION=${{ steps.version_check.outputs.current_version }}
+          DATE=$(date +%Y-%m-%d)
+
+          # Get commit message (first line only, cleaned up)
+          COMMIT_MSG=$(git log -1 --pretty=%B | head -1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+          # Create new changelog entry with commit message
+          cat > /tmp/new_entry.md << EOF
+
+          ## [$VERSION] - $DATE
+
+          ### Changed
+          - $COMMIT_MSG
+
+          EOF
+
+          # Insert new entry after the header (after line 7)
+          head -n 7 CHANGELOG.md > /tmp/changelog_temp.md
+          cat /tmp/new_entry.md >> /tmp/changelog_temp.md
+          tail -n +8 CHANGELOG.md >> /tmp/changelog_temp.md
+          mv /tmp/changelog_temp.md CHANGELOG.md
+
+          # Commit and push CHANGELOG
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG for v$VERSION [skip ci]"
+          git push origin master
+
       - name: Publish to npm
         if: steps.version_check.outputs.should_publish == 'true'
         run: npm publish --access public
@@ -93,7 +123,7 @@ jobs:
             npm install n8n-nodes-api-resend
             ```
 
-            See the [CHANGELOG](https://github.com/carlosmgv02/n8n-nodes-resend/blob/master/CHANGELOG.md) for details.
+            See the [CHANGELOG](https://github.com/carlosmgv02/n8n-nodes-api-resend/blob/master/CHANGELOG.md) for details.
           draft: false
           prerelease: false
 

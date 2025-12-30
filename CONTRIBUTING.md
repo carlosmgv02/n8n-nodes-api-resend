@@ -6,7 +6,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/carlosmgv02/n8n-nodes-resend.git
+   git clone https://github.com/carlosmgv02/n8n-nodes-api-resend.git
    cd n8n-nodes-resend
    ```
 

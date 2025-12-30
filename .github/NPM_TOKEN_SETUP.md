@@ -22,7 +22,7 @@ This document explains how to configure the `NPM_TOKEN` secret required for auto
 
 ## Step 2: Add Token to GitHub Secrets
 
-1. Go to your GitHub repository: https://github.com/carlosmgv02/n8n-nodes-resend
+1. Go to your GitHub repository: https://github.com/carlosmgv02/n8n-nodes-api-resend
 2. Navigate to **Settings** → **Secrets and variables** → **Actions**
 3. Click **New repository secret**
 4. Fill in:

@@ -1,23 +1,23 @@
 #!/bin/bash
 
-# Script para desarrollo local del nodo Resend
+# Local development script for Resend node
 
-echo "🔨 Building n8n-nodes-resend..."
+echo "🔨 Building n8n-nodes-api-resend..."
 npm run build
 
 if [ $? -eq 0 ]; then
     echo "✅ Build successful!"
     echo ""
-    echo "📦 Para usar el nodo en n8n local:"
+    echo "📦 To use the node in local n8n:"
     echo ""
-    echo "Opción 1 - npm link (primera vez):"
+    echo "Option 1 - npm link (first time):"
     echo "  npm link"
-    echo "  cd ~/.n8n && npm link n8n-nodes-resend"
+    echo "  cd ~/.n8n && npm link n8n-nodes-api-resend"
     echo ""
-    echo "Opción 2 - Variable de entorno:"
+    echo "Option 2 - Environment variable:"
     echo "  N8N_CUSTOM_EXTENSIONS=\"$(pwd)\" n8n start"
     echo ""
-    echo "Luego reinicia n8n para ver los cambios"
+    echo "Then restart n8n to see changes"
 else
     echo "❌ Build failed"
     exit 1

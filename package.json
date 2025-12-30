@@ -15,17 +15,17 @@
     "automation"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/carlosmgv02/n8n-nodes-resend",
+  "homepage": "https://github.com/carlosmgv02/n8n-nodes-api-resend",
   "author": {
     "name": "Carlos Martínez García-Villarrubia",
     "email": "carlosmgv02@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/carlosmgv02/n8n-nodes-resend.git"
+    "url": "git+https://github.com/carlosmgv02/n8n-nodes-api-resend.git"
   },
   "bugs": {
-    "url": "https://github.com/carlosmgv02/n8n-nodes-resend/issues"
+    "url": "https://github.com/carlosmgv02/n8n-nodes-api-resend/issues"
   },
   "main": "index.js",
   "scripts": {
